@@ -10,7 +10,6 @@ public class DatabaseHandlerEfCoreExample : IdentityDbContext<IdentityUser>
     {
 
     }
-
     public DbSet<Books> Books { get; set; }
 
 }

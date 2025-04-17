@@ -81,6 +81,7 @@ public class AuthController : ControllerBase
 
     // Books 
     // GET: api/Books
+    [Authorize(Roles = "adminRole")]
     [HttpGet]
     public async Task<ActionResult<IEnumerable<Books>>> GetBooks()
     {
@@ -88,6 +89,7 @@ public class AuthController : ControllerBase
     }
 
     // GET: api/Books/5
+    [Authorize(Roles = "adminRole")]
     [HttpGet("{id}")]
     public async Task<ActionResult<Books>> GetBook(int id)
     {
@@ -100,6 +102,7 @@ public class AuthController : ControllerBase
     }
 
     // POST: api/Books
+    [Authorize(Roles = "adminRole")]
     [HttpPost]
     public async Task<ActionResult<Books>> CreateBook(Books book)
     {
@@ -110,6 +113,7 @@ public class AuthController : ControllerBase
     }
 
     // PUT: api/Books/5
+    [Authorize(Roles = "adminRole")]
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateBook(int id, Books book)
     {
@@ -134,6 +138,7 @@ public class AuthController : ControllerBase
     }
 
     // DELETE: api/Books/5
+    [Authorize(Roles = "adminRole")]
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteBook(int id)
     {
