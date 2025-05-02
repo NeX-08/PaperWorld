@@ -1,43 +1,93 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using PaperWorld.Models;
 
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
-namespace PaperWorld.Controllers
-{
     [Route("api/[controller]")]
     [ApiController]
     public class LibraryController : ControllerBase
     {
-        // GET: api/<LibraryController>
+    private readonly UserManager<IdentityUser> _userManager;
+    private readonly DatabaseHandlerEfCoreExample _context;
+
+    public LibraryController(UserManager<IdentityUser> userManager,
+                             DatabaseHandlerEfCoreExample context)
+    {
+        _userManager = userManager;
+        _context = context;
+    }
+
+    // GET: api/Books
+    [Authorize(Roles = "AdminRole")]
         [HttpGet]
-        public IEnumerable<string> Get()
+        public async Task<ActionResult<IEnumerable<Books>>> GetBooks()
         {
-            return new string[] { "value1", "value2" };
+            return await _context.Books.ToListAsync();
         }
 
-        // GET api/<LibraryController>/5
+        // GET: api/Books/id
+        [Authorize(Roles = "AdminRole")]
         [HttpGet("{id}")]
-        public string Get(int id)
+        public async Task<ActionResult<Books>> GetBook(int id)
         {
-            return "value";
+            var book = await _context.Books.FindAsync(id);
+
+            if (book == null)
+                return NotFound();
+
+            return book;
         }
 
-        // POST api/<LibraryController>
+        // POST: api/Books
+        [Authorize(Roles = "AdminRole")]
         [HttpPost]
-        public void Post([FromBody] string value)
+        public async Task<ActionResult<Books>> CreateBook(Books book)
         {
+            _context.Books.Add(book);
+            await _context.SaveChangesAsync();
+
+            return CreatedAtAction(nameof(GetBook), new { id = book.Id }, book);
         }
 
-        // PUT api/<LibraryController>/5
+        // PUT: api/Books/id
+        [Authorize(Roles = "AdminRole")]
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        public async Task<IActionResult> UpdateBook(int id, Books book)
         {
+            if (id != book.Id)
+                return BadRequest();
+
+            _context.Entry(book).State = EntityState.Modified;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!_context.Books.Any(e => e.Id == id))
+                    return NotFound();
+                else
+                    throw;
+            }
+
+            return NoContent();
         }
 
-        // DELETE api/<LibraryController>/5
+        // DELETE: api/Books/5
+        [Authorize(Roles = "AdminRole")]
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public async Task<IActionResult> DeleteBook(int id)
         {
+            var book = await _context.Books.FindAsync(id);
+            if (book == null)
+                return NotFound();
+
+            _context.Books.Remove(book);
+            await _context.SaveChangesAsync();
+
+            return NoContent();
         }
     }
-}
