@@ -68,19 +68,20 @@ public class AuthController : ControllerBase
 
 
     [HttpPost("login-token")]
-    public async Task<IActionResult> LoginForToken([FromBody] Members model)
+    public async Task<IActionResult> LoginForToken([FromBody] LoginRequest model)
     {
         var user = await _userManager.FindByEmailAsync(model.Email);
         if (user != null && await _userManager.CheckPasswordAsync(user, model.Password))
         {
-            var roles = _userManager.GetRolesAsync(user);
-            var result = TokenHelper.GenerateToken(user, roles.Result.ToList());
+            var roles = await _userManager.GetRolesAsync(user);
+            var result = TokenHelper.GenerateToken(user, roles.ToList());
 
             return Ok(result);
         }
 
         return Unauthorized("Invalid email or password.");
     }
+
 
 
     [HttpPost("logout")]

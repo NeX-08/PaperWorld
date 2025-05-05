@@ -76,7 +76,7 @@ using PaperWorld.Models;
             return NoContent();
         }
 
-        // DELETE: api/Books/5
+        // DELETE: api/Books
         [Authorize(Roles = "AdminRole")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteBook(int id)

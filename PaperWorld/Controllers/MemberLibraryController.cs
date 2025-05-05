@@ -7,7 +7,8 @@ namespace PaperWorld.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize] // ✅ Requires authentication, no role restriction
+
+    [Authorize] 
     public class MemberLibraryController : ControllerBase
     {
         private readonly DatabaseHandlerEfCoreExample _context;
@@ -24,7 +25,7 @@ namespace PaperWorld.Controllers
             return await _context.Books.ToListAsync();
         }
 
-        // GET: api/MemberLibrary/5
+        // GET: api/MemberLibrary
         [HttpGet("{id}")]
         public async Task<ActionResult<Books>> GetBook(int id)
         {
