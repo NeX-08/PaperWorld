@@ -6,11 +6,11 @@ using Microsoft.AspNetCore.Mvc;
 [Route("api/[controller]")]
 public class AuthController : ControllerBase
 {
-    private readonly UserManager<IdentityUser> _userManager;
-    private readonly SignInManager<IdentityUser> _signInManager;
+    private readonly UserManager<Members> _userManager;
+    private readonly SignInManager<Members> _signInManager;
 
-    public AuthController(UserManager<IdentityUser> userManager,
-                          SignInManager<IdentityUser> signInManager)
+    public AuthController(UserManager<Members> userManager,
+                          SignInManager<Members> signInManager)
     {
         _userManager = userManager;
         _signInManager = signInManager;
@@ -25,23 +25,62 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("register")]
-    public async Task<IActionResult> Register([FromBody] Members model)
+    public async Task<IActionResult> Register([FromBody] RegisterRequest model)
     {
-        var user = new IdentityUser { UserName = model.Email, Email = model.Email };
+        var user = new Members
+        {
+            UserName = model.Email,
+            Email = model.Email,
+            Name = model.Name,       
+            Address = model.Address
+        };
+
         var result = await _userManager.CreateAsync(user, model.Password);
 
         if (result.Succeeded)
         {
+            await _userManager.AddToRoleAsync(user, "Member");
             return Ok("User registered successfully.");
         }
 
         return BadRequest(result.Errors);
     }
 
-    [HttpPost("register-admin")]
-    public async Task<IActionResult> RegisterAsAdminRole([FromBody] Members model)
+
+    [HttpPost("register-satff")]
+    public async Task<IActionResult> RegisterAsSatff([FromBody] RegisterRequest model)
     {
-        var user = new IdentityUser { UserName = model.Email, Email = model.Email };
+        var user = new Members
+        {
+            UserName = model.Email,
+            Email = model.Email,
+            Name = model.Name,       
+            Address = model.Address
+        };
+
+        var result = await _userManager.CreateAsync(user, model.Password);
+
+        if (result.Succeeded)
+        {
+            await _userManager.AddToRoleAsync(user, "Satff");
+            return Ok("User registered successfully.");
+        }
+
+        return BadRequest(result.Errors);
+    }
+
+
+    [HttpPost("register-admin")]
+    public async Task<IActionResult> RegisterAsAdmin([FromBody] RegisterRequest model)
+    {
+        var user = new Members
+        {
+            UserName = model.Email,
+            Email = model.Email,
+            Name = model.Name,        
+            Address = model.Address
+        };
+
         var result = await _userManager.CreateAsync(user, model.Password);
 
         if (result.Succeeded)
@@ -53,8 +92,9 @@ public class AuthController : ControllerBase
         return BadRequest(result.Errors);
     }
 
+
     [HttpPost("login")]
-    public async Task<IActionResult> Login([FromBody] Members model)
+    public async Task<IActionResult> Login([FromBody] LoginRequest model)
     {
         var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, isPersistent: false, lockoutOnFailure: false);
 

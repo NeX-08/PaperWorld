@@ -46,7 +46,7 @@ builder.Services.AddDbContext<DatabaseHandlerEfCoreExample>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("PostgreConn")));
 
 // Add Identity
-builder.Services.AddIdentity<IdentityUser, IdentityRole>()
+builder.Services.AddIdentity<Members, IdentityRole>()
     .AddEntityFrameworkStores<DatabaseHandlerEfCoreExample>()
     .AddDefaultTokenProviders();
 
@@ -86,6 +86,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

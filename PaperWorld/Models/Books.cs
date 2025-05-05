@@ -3,6 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 public class Books
 {
+    [Key]
     public int Id { get; set; }
 
     [Required]

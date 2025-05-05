@@ -15,7 +15,11 @@ public static class TokenHelper
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(SecretKey));
         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
-        var claims = new List<Claim>();
+        var claims = new List<Claim>
+    {
+        new Claim(ClaimTypes.NameIdentifier, user.Id),
+        new Claim(ClaimTypes.Email, user.Email ?? "")
+    };
 
         claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
 
@@ -26,6 +30,7 @@ public static class TokenHelper
             expires: DateTime.Now.AddHours(2),
             signingCredentials: creds
         );
+
         var jwtToken = new JwtSecurityTokenHandler().WriteToken(token);
 
         return new
@@ -34,6 +39,7 @@ public static class TokenHelper
             email = user.Email
         };
     }
+
     public static object GenerateToken(IdentityUser user)
     {
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(SecretKey));

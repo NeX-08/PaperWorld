@@ -9,15 +9,16 @@ using PaperWorld.Models;
     [ApiController]
     public class LibraryController : ControllerBase
     {
-    private readonly UserManager<IdentityUser> _userManager;
+    private readonly UserManager<Members> _userManager;
     private readonly DatabaseHandlerEfCoreExample _context;
 
-    public LibraryController(UserManager<IdentityUser> userManager,
-                             DatabaseHandlerEfCoreExample context)
+    public LibraryController(UserManager<Members> userManager,
+                         DatabaseHandlerEfCoreExample context)
     {
         _userManager = userManager;
         _context = context;
     }
+
 
     // GET: api/Books
     [Authorize(Roles = "AdminRole")]
